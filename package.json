@@ -1,0 +1,23 @@
+{
+  "name": "xblog",
+  "version": "1.0.0",
+  "description": "xuxule's blog",
+  "main": "webpack.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "blog"
+  ],
+  "author": "xuxule",
+  "license": "ISC",
+  "dependencies": {
+    "webpack": "^3.0.0"
+  },
+  "devDependencies": {
+    "css-loader": "^0.28.4",
+    "extract-text-webpack-plugin": "^2.1.2",
+    "html-webpack-plugin": "^2.29.0",
+    "style-loader": "^0.18.2"
+  }
+}
