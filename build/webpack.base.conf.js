@@ -2,21 +2,13 @@ var path = require('path')
 var utils = require('./utils')
 var htmlWebpackPlugin = require('html-webpack-plugin')
 var basename = path.basename
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
+// var ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const config = {
-  entry: {
-    main: '../src/main.js'
-  },
+  entry: {},
   output: {
     filename: 'js/[name].js',
     path: path.resolve(__dirname, '../dist')
-  },
-  module: {
-    rules: [{
-      test: /\.css$/,
-      use: ['style-loader', 'css-loader']
-    }]
   },
   plugins: []
 }
@@ -37,20 +29,6 @@ allJs.forEach(file => {
   config.entry[filename] = file
 })
 
-var allCss = utils.searchFile(src, /\.css$/)
-allCss.forEach(file => {
-  var extractText = new ExtractTextPlugin('css/' + basename(file))
-  config.module.rules.shift({
-    test: new RegExp(basename(file) + '$'),
-    use: extractText.extract({
-      fallback: 'style-loader',
-      use: 'css-loader'
-    })
-  })
-
-  config.plugins.push(extractText)
-})
-
 Array.prototype.push.apply(config['plugins'], htmlPlugins)
-
+console.log(1)
 module.exports = config
