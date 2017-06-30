@@ -4,20 +4,22 @@ var htmlWebpackPlugin = require('html-webpack-plugin')
 var path = require('path')
 var chokidar = require('chokidar')
 var webpackWatcher = null
-var src = path.resolve(__dirname, '../src')
 var bs = require('browser-sync').create()
 var utils = require('./utils')
-
+var fs = require('fs')
+var devDir = path.resolve(__dirname, '../dev')
+var rm = require('rimraf')
 // 初始化browser-sync
 bs.init({
-    server: path.resolve(__dirname, '../dist'),
+    server: devDir,
     logConnections: false,
     logFileChanges: false,
     notify: false,
     startPath: '/page/index.html'
 })
+
 // 监听文件修改
-chokidar.watch(src, {
+chokidar.watch(path.resolve(__dirname, '../src'), {
   ignoreInitial: true
 }).on('add', function (filename) {
   var ext = path.extname(filename)
@@ -34,6 +36,18 @@ chokidar.watch(src, {
   console.log(`File ${path} has been added`)
 
   bundle(path.basename(filename))
+}).on('unlink', function (filename) {
+  var ext = path.extname(filename)
+  var base = path.basename(filename)
+
+  switch (ext.toLowerCase()) {
+    case '.html':
+      rmHtml(filename)
+      break
+    case '.js':
+      rmJs(filename)
+      break
+  }
 })
 
 function setHtmlConfig (filename) {
@@ -44,14 +58,52 @@ function setJsConfig (filename) {
   Object.assign(devConfig.entry, utils.createEntrys(filename))
 }
 
+/**
+ * 删除html
+ * @param {string} filename
+ */
+function rmHtml (filename) {
+  var file = path.basename(filename).split('.')[0]
+
+  devConfig.plugins = devConfig.plugins.filter(obj => !(obj in htmlWebpackPlugin && obj.options.template === filename))
+  rm.sync('dev/page/' + base)
+}
+
+/**
+ * 删除js
+ * @param {string} filename
+ */
+function rmJs (filename) {
+  var base = path.basename(filename)
+  var file = base.split('.')[0]
+  // 修改配置文件
+  for(key in devConfig.entry) {
+    if (key === file) {
+      delete devConfig.entry[key]
+      rm.sync('dev/js/' + base)
+      break
+    }
+  }
+  // devConfig.plugins = devConfig.plugins.filter(obj => !(obj in htmlWebpackPlugin && obj.options.template === filename))
+  devConfig.plugins.forEach(obj => {
+    if (obj.constructor === htmlWebpackPlugin) {
+      var chunks = obj.options.chunks
+      var index = chunks.indexOf(file)
+      if (index >= 0) {
+        chunks.splice(index, 1)
+      }
+    }
+  })
+}
+
 // 打包+监听
 function bundle (file) {
   var compiler = webpack(devConfig)
-
+  console.log('reload')
   if(webpackWatcher) webpackWatcher.close()
   webpackWatcher = compiler.watch({}, function () {
     bs.reload("*.html,*.js")
-    console.log('reload')
+    // console.log('reload')
   })
 }
 
