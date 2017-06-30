@@ -47,10 +47,8 @@ function bundle (file) {
   if(webpackWatcher) webpackWatcher.close()
   webpackWatcher = compiler.watch({}, function () {
     bs.reload("*.html,*.js")
-    console.log('已重新打包')
+    console.log('reload')
   })
 }
 
 bundle("*.html,*.js")
-
-
