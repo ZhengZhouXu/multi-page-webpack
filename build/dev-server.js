@@ -1,42 +1,56 @@
 var webpack = require('webpack')
 var devConfig = require('./webpack.dev.conf')
 var htmlWebpackPlugin = require('html-webpack-plugin')
-
 var path = require('path')
-var webpackWatcher = null
-
 var chokidar = require('chokidar')
-var watcher = chokidar.watch(path.resolve(__dirname, '../src'), {
+var webpackWatcher = null
+var src = path.resolve(__dirname, '../src')
+var bs = require('browser-sync').create()
+var utils = require('./utils')
+
+// 初始化browser-sync
+bs.init({
+    server: path.resolve(__dirname, '../dist')
+})
+// 监听文件修改
+chokidar.watch(src, {
   ignoreInitial: true
-})
+}).on('add', function (filename) {
+  var ext = path.extname(filename)
 
-watcher.on('add', function (filename) {
-  if(webpackWatcher) webpackWatcher.close()
+  switch (ext.toLowerCase()) {
+    case '.html':
+      setHtmlConfig(filename)
+      break
+    case '.js':
+      setJsConfig(filename)
+      break
+  }
 
-  devConfig.plugins.push(new htmlWebpackPlugin({
-    chunks: [path.basename(filename).split('.')[0]],
-    filename: 'page/' + path.basename(filename),
-    template: filename
-  }))
-
-  bundle()
   console.log(`File ${path} has been added`)
+
+  bundle(path.basename(filename))
 })
 
-function bundle () {
+function setHtmlConfig (filename) {
+  Array.prototype.push.apply(devConfig.plugins, utils.createHtmlPlugins(filename))
+}
 
-  var bs = require('browser-sync').create()
+function setJsConfig (filename) {
+  Object.assign(devConfig.entry, utils.createEntrys(filename))
+}
+
+// 打包+监听
+function bundle (file) {
   var compiler = webpack(devConfig)
 
-  bs.init({
-    server: path.resolve(__dirname, '../dist')
-  })
+  if(webpackWatcher) webpackWatcher.close()
   webpackWatcher = compiler.watch({}, function () {
     bs.reload("*.html,*.js")
     console.log('已重新打包')
   })
 }
 
-bundle()
+bundle("*.html,*.js")
 
 

@@ -13,7 +13,9 @@
   ],
   "author": "xuxule",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "glob": "^7.1.2"
+  },
   "devDependencies": {
     "browser-sync": "^2.18.12",
     "chokidar": "^1.7.0",
