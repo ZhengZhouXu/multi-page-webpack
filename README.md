@@ -2,3 +2,4 @@
 * 热替换(browsersync)
 
 > 文件查找使用golb模块
+> 每次运行替换dist文件

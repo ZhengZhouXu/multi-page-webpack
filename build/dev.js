@@ -10,7 +10,11 @@ var utils = require('./utils')
 
 // 初始化browser-sync
 bs.init({
-    server: path.resolve(__dirname, '../dist')
+    server: path.resolve(__dirname, '../dist'),
+    logConnections: false,
+    logFileChanges: false,
+    notify: false,
+    startPath: '/page/index.html'
 })
 // 监听文件修改
 chokidar.watch(src, {
