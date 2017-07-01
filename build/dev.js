@@ -9,6 +9,8 @@ var utils = require('./utils')
 var fs = require('fs')
 var devDir = path.resolve(__dirname, '../dev')
 var rm = require('rimraf')
+var basename = path.basename
+
 // 初始化browser-sync
 bs.init({
     server: devDir,
@@ -35,7 +37,7 @@ chokidar.watch(path.resolve(__dirname, '../src'), {
 
   console.log(`File ${path} has been added`)
 
-  bundle(path.basename(filename))
+  bundle()
 }).on('unlink', function (filename) {
   var ext = path.extname(filename)
   var base = path.basename(filename)
@@ -48,6 +50,7 @@ chokidar.watch(path.resolve(__dirname, '../src'), {
       rmJs(filename)
       break
   }
+  bundle()
 })
 
 function setHtmlConfig (filename) {
@@ -55,7 +58,16 @@ function setHtmlConfig (filename) {
 }
 
 function setJsConfig (filename) {
+  // 新增js入口
   Object.assign(devConfig.entry, utils.createEntrys(filename))
+  // 对应的html打包
+    devConfig.plugins.forEach(obj => {
+    if (obj.constructor === htmlWebpackPlugin) {
+      if (basename(obj.options.template).split('.')[0] === basename(filename).split('.')[0]) {
+        obj.options.chunks.push(basename(filename).split('.')[0])
+      }
+    }
+  })
 }
 
 /**
@@ -97,7 +109,7 @@ function rmJs (filename) {
 }
 
 // 打包+监听
-function bundle (file) {
+function bundle () {
   var compiler = webpack(devConfig)
   console.log('reload')
   if(webpackWatcher) webpackWatcher.close()
