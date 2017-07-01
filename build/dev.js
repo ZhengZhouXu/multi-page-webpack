@@ -10,14 +10,23 @@ var fs = require('fs')
 var devDir = path.resolve(__dirname, '../dev')
 var rm = require('rimraf')
 var basename = path.basename
+var config = require('../config/index')
 
 // 初始化browser-sync
 bs.init({
-    server: devDir,
+    port: config.dev.port,
+    server: {
+      baseDir: devDir,
+      middleware: function (req, res, next) {
+        // console.log("Hi from middleware");
+        // res.send('123')
+        // next();
+      }
+    },
     logConnections: false,
     logFileChanges: false,
     notify: false,
-    startPath: '/page/index.html'
+    startPath: config.dev.startPath
 })
 
 // 监听文件修改
@@ -34,8 +43,6 @@ chokidar.watch(path.resolve(__dirname, '../src'), {
       setJsConfig(filename)
       break
   }
-
-  console.log(`File ${path} has been added`)
 
   bundle()
 }).on('unlink', function (filename) {
@@ -119,4 +126,4 @@ function bundle () {
   })
 }
 
-bundle("*.html,*.js")
+bundle()
