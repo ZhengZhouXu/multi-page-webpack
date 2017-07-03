@@ -9,15 +9,14 @@
     "dev": "node ./build/dev.js"
   },
   "keywords": [
-    "blog"
+    "webpack"
   ],
   "author": "xuxule",
   "license": "ISC",
   "dependencies": {
-    "glob": "^7.1.2",
-    "jquery": "^3.2.1"
   },
   "devDependencies": {
+    "glob": "^7.1.2",
     "browser-sync": "^2.18.12",
     "chokidar": "^1.7.0",
     "css-loader": "^0.28.4",

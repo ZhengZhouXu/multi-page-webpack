@@ -3,7 +3,6 @@ var utils = require('./utils')
 var htmlWebpackPlugin = require('html-webpack-plugin')
 var glob = require('glob')
 var basename = path.basename
-// var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var utils = require('./utils')
 
 const config = {

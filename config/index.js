@@ -1,7 +1,7 @@
 module.exports = {
   prod: {
     env: 'production',
-    common: ['jquery']
+    common: []
   },
   dev: {
     port: 3000,
