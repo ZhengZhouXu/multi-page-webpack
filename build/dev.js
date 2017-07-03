@@ -11,6 +11,7 @@ var devDir = path.resolve(__dirname, '../dev')
 var rm = require('rimraf')
 var basename = path.basename
 var config = require('../config/index')
+var proxy = require('http-proxy').createProxyServer()
 
 // 初始化browser-sync
 bs.init({
@@ -18,9 +19,18 @@ bs.init({
     server: {
       baseDir: devDir,
       middleware: function (req, res, next) {
-        // console.log("Hi from middleware");
-        // res.send('123')
-        // next();
+        var url = req.url
+        var proxyTable = config.dev.proxyTable
+
+        for (let key in proxyTable) {
+          if (url.includes(key)) {
+            var target = url.replace(key, proxyTable[key])
+            proxy.web(req, res, {target: 'http://localhost:9090'})
+            return
+          }
+        }
+
+        next();
       }
     },
     logConnections: false,

@@ -24,6 +24,7 @@
     "express": "^4.15.3",
     "extract-text-webpack-plugin": "^2.1.2",
     "html-webpack-plugin": "^2.29.0",
+    "http-proxy": "^1.16.2",
     "rimraf": "^2.6.1",
     "style-loader": "^0.18.2",
     "webpack": "^3.0.0",
