@@ -1,10 +1,12 @@
 var merge = require('webpack-merge')
 var baseConfig = require('./webpack.base.conf')
-
-// 单独打包css放这里
+var config = require('../config')
+var webpack = require('webpack')
+var common = config.prod.common
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 
-var config = merge(baseConfig, {
+var prodConfig = merge(baseConfig, {
   module: {
     rules: [{
       test: /\.css$/,
@@ -15,8 +17,26 @@ var config = merge(baseConfig, {
     }]
   },
   plugins: [
-    new ExtractTextPlugin('css/[name].css')
+    new webpack.DefinePlugin({
+      'process.env': config.prod.env
+    }),
+    new ExtractTextPlugin('css/[name].css'),
+    new webpack.optimize.UglifyJsPlugin({
+      sourceMap: false
+    }),
+    new OptimizeCSSPlugin({
+      cssProcessorOptions: {
+        safe: true
+      }
+    })
   ]
 })
 
-module.exports = config
+if (common && common.length > 0) {
+  prodConfig.plugins.push(new webpack.optimize.CommonsChunkPlugin({
+    name: 'common',
+    minChunks: 2
+  }))
+}
+
+module.exports = prodConfig
