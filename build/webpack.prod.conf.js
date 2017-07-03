@@ -21,9 +21,9 @@ var prodConfig = merge(baseConfig, {
       'process.env': config.prod.env
     }),
     new ExtractTextPlugin('css/[name].css'),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: false
-    }),
+    // new webpack.optimize.UglifyJsPlugin({
+    //   sourceMap: false
+    // }),
     new OptimizeCSSPlugin({
       cssProcessorOptions: {
         safe: true
